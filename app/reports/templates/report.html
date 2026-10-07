@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sentinel Report — {{ report.url }}</title>
+    <style>
+      body {
+        font-family: -apple-system, system-ui, sans-serif;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+        color: #1a1a1a;
+        background: #f8f9fa;
+      }
+      h1 {
+        color: #0d1117;
+      }
+      .score {
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .score.good {
+        color: #2da44e;
+      }
+      .score.mid {
+        color: #d29922;
+      }
+      .score.bad {
+        color: #cf222e;
+      }
+      .finding {
+        padding: 12px;
+        border-radius: 6px;
+        margin: 8px 0;
+        background: #fff;
+        border-left: 4px solid #ccc;
+      }
+      .finding.pass {
+        border-color: #2da44e;
+      }
+      .finding.warning {
+        border-color: #d29922;
+      }
+      .finding.fail {
+        border-color: #cf222e;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .badge.critical {
+        background: #cf222e;
+        color: #fff;
+      }
+      .badge.high {
+        background: #fb8500;
+        color: #fff;
+      }
+      .badge.medium {
+        background: #d29922;
+        color: #fff;
+      }
+      .badge.low {
+        background: #57606a;
+        color: #fff;
+      }
+      .badge.info {
+        background: #0969da;
+        color: #fff;
+      }
+      .ai-report {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        white-space: pre-wrap;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sentinel Report</h1>
+    <p><strong>URL:</strong> {{ report.url }}</p>
+    <p><strong>Security Score:</strong></p>
+    <div
+      class="score {% if report.score >= 80 %}good{% elif report.score >= 50 %}mid{% else %}bad{% endif %}"
+    >
+      {{ report.score }}/100
+    </div>
+    <p>
+      Critical: {{ report.summary.critical }} · High: {{ report.summary.high }}
+      · Medium: {{ report.summary.medium }} · Low: {{ report.summary.low }}
+    </p>
+
+    <h2>Findings</h2>
+    {% for f in report.findings %}
+    <div class="finding {{ f.status }}">
+      <span class="badge {{ f.severity }}">{{ f.severity }}</span>
+      <strong>{{ f.title }}</strong> — {{ f.detail }} {% if f.recommendation
+      %}<br /><em>{{ f.recommendation }}</em>{% endif %}
+    </div>
+    {% endfor %} {% if report.ai_report %}
+    <h2>AI Analysis</h2>
+    <div class="ai-report">{{ report.ai_report }}</div>
+    {% endif %}
+  </body>
+</html>
