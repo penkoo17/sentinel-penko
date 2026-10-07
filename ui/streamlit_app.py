@@ -1,7 +1,7 @@
 import httpx
 import streamlit as st
 
-API = "http://localhost:8000"
+API_URL = "https://sentinel-olive-omega.vercel.app"
 
 st.set_page_config(
     page_title="Sentinel",
