@@ -200,14 +200,14 @@ if scan_clicked and url:
     with st.spinner("Scanning target..."):
         try:
             r = httpx.post(
-                f"{API}/scan",
+                f"{API_URL}/scan",
                 json={"url": url, "deep_scan": deep},
                 timeout=180,
             )
             r.raise_for_status()
             data = r.json()
         except httpx.ConnectError:
-            st.error("Tidak bisa konek ke API. Pastikan `uvicorn` jalan di port 8000.")
+            st.error(f"Tidak bisa konek ke API di {API_URL}. Cek apakah backend Vercel masih hidup.")
             st.stop()
         except Exception as e:
             st.error(f"Error: {e}")
