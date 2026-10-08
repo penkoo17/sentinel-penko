@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
@@ -15,6 +17,9 @@ from app.scanners import (
     tls,
 )
 
+from app.models.scan import AttackSurfaceRequest
+from app.analyzers.attack_surface import scan_attack_surface
+
 app = FastAPI(title="Sentinel", version="0.1.0")
 
 
@@ -30,19 +35,42 @@ async def health():
 
 async def _run_all(req: ScanRequest):
     url = str(req.url)
-
     findings = []
-    findings.extend(await headers.scan_headers(url))
-    findings.extend(await cookies.scan_cookies(url))
-    findings.extend(tls.scan_tls(url))
-    findings.extend(await cors.scan_cors(url))
-    findings.extend(dns_check.scan_dns(url))
-    findings.extend(await secrets.scan_secrets(url))
-    findings.extend(await js_parser.scan_js_endpoints(url))
 
+    # scanner async → jalankan paralel
+    async_results = await asyncio.gather(
+        headers.scan_headers(url),
+        cookies.scan_cookies(url),
+        cors.scan_cors(url),
+        secrets.scan_secrets(url),
+        return_exceptions=True,
+    )
+    for result in async_results:
+        if isinstance(result, Exception):
+            continue
+        if result:
+            findings.extend(result)
+
+    # scanner sync → jalankan langsung
+    try:
+        findings.extend(dns_check.scan_dns(url))
+    except Exception:
+        pass
+
+    try:
+        findings.extend(tls.scan_tls(url))
+    except Exception:
+        pass
+
+    # deep scan → crawler + attack surface
     endpoints = []
+    attack_surface = None
     if req.deep_scan:
-        endpoints = await crawler.crawl(url)
+        try:
+            endpoints = await crawler.crawl(url)
+        except Exception:
+            endpoints = []
+        attack_surface = scan_attack_surface(url)
 
     score = scorer.calculate_score(findings)
     summary = scorer.summarize(findings)
@@ -55,8 +83,8 @@ async def _run_all(req: ScanRequest):
         findings=findings,
         endpoints=endpoints,
         ai_report=ai_report,
+        attack_surface=attack_surface,
     )
-
 
 @app.post("/scan", response_model=ScanResponse)
 async def scan(req: ScanRequest):
@@ -70,3 +98,9 @@ async def scan(req: ScanRequest):
 async def scan_report(req: ScanRequest):
     report = await _run_all(req)
     return render_html(report)
+
+
+@app.post("/scan/attack-surface")
+def api_attack_surface(payload: AttackSurfaceRequest):
+    """Scan attack surface: SSL, DNS, tech, ports."""
+    return scan_attack_surface(payload.url)

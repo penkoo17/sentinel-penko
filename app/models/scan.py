@@ -33,3 +33,8 @@ class ScanResponse(BaseModel):
     findings: list[Finding]
     endpoints: list[Endpoint] = []
     ai_report: Optional[str] = None
+    attack_surface: Optional[dict] = None
+
+
+class AttackSurfaceRequest(BaseModel):
+    url: str
