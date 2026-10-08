@@ -99,10 +99,10 @@ def notice(kind: str, text: str) -> str:
 
 def verdict(score: int) -> tuple[str, str]:
     if score >= 80:
-        return "secure", "--passed"
-    if score >= 50:
-        return "needs attention", "--medium"
-    return "vulnerable", "--critical"
+        return "secure", "#4cc38a"
+    if score >= 60:
+        return "needs attention", "#e2c044"
+    return "vulnerable", "#ff6369"
 
 
 def summary(data: dict) -> str:
@@ -114,11 +114,11 @@ def summary(data: dict) -> str:
     url = e(data.get("url", ""))
     return _flat(
         f"""
-        <div class="sn-sum" style="--c:var({color})">
-          <div class="sn-score"><span class="n">{score}</span><span class="of">/100</span></div>
+        <div class="sn-sum">
+          <div class="sn-score"><span class="n" style="color:{color}">{score}</span><span class="of">/100</span></div>
           <div>
-            <div class="sn-verdict">{label}</div>
-            <div class="sn-meter" role="img" aria-label="Skor keamanan {score} dari 100"><i style="width:{score}%"></i></div>
+            <div class="sn-verdict" style="color:{color}">{label}</div>
+            <div class="sn-meter" role="img" aria-label="Skor keamanan {score} dari 100"><i style="width:{score}%;background:{color}"></i></div>
             <div class="sn-target" title="{url}">{url}</div>
           </div>
           <dl class="sn-stats">
