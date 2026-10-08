@@ -5,7 +5,7 @@ import streamlit as st
 from pathlib import Path
 
 from theme import APP_CSS
-from views import board_doc, brand_with_logo, creator_bar, endpoints_view, hint, notice, summary, surface_view
+from views import board_doc, brand_with_logo, confirm_dialog, creator_bar, disclaimer, endpoints_view, hint, notice, summary, surface_view
 
 import os
 
@@ -50,6 +50,7 @@ with st.form("scan", border=False):
     deep = c_deep.checkbox("Deep scan")
     go = c_go.form_submit_button("Scan")
 
+# STEP 1: user klik Scan → simpan pending, tampilkan konfirmasi
 if go:
     target = url.strip()
     if not target:
@@ -57,12 +58,34 @@ if go:
         st.stop()
     if "://" not in target:
         target = "https://" + target
-    with st.spinner("scanning target…"):
-        data, err = run_scan(target, deep)
-    if err:
-        st.markdown(notice("err", err), unsafe_allow_html=True)
-        st.stop()
-    st.session_state["scan_result"] = data
+    st.session_state["pending_target"] = target
+    st.session_state["pending_deep"] = deep
+
+# STEP 2: tampilkan dialog konfirmasi kalau ada pending
+pending = st.session_state.get("pending_target")
+if pending:
+    st.markdown(confirm_dialog(pending), unsafe_allow_html=True)
+    col_yes, col_no, _ = st.columns([1, 1, 4])
+    with col_yes:
+        if st.button("✓ Ya, saya yakin", type="primary", use_container_width=True):
+            with st.spinner("scanning target..."):
+                data, err = run_scan(
+                    st.session_state["pending_target"],
+                    st.session_state["pending_deep"],
+                )
+            del st.session_state["pending_target"]
+            del st.session_state["pending_deep"]
+            if err:
+                st.markdown(notice("err", err), unsafe_allow_html=True)
+                st.stop()
+            st.session_state["scan_result"] = data
+            st.rerun()
+    with col_no:
+        if st.button("✕ Batal", use_container_width=True):
+            del st.session_state["pending_target"]
+            del st.session_state["pending_deep"]
+            st.rerun()
+    st.stop()
 
 data = st.session_state.get("scan_result")
 if data is None:
@@ -102,4 +125,6 @@ with tab_endpoints:
 if tab_surface is not None:
     with tab_surface:
         st.markdown(surface_view(attack_surface), unsafe_allow_html=True)
-       
+
+
+st.markdown(disclaimer(), unsafe_allow_html=True)

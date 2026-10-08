@@ -103,6 +103,20 @@ button[data-baseweb="tab"][aria-selected="true"] p{color:var(--text)}
 .port-num{font-weight:700}
 .port-svc{color:var(--muted)}
 
+/* scan confirmation dialog */
+.sn-confirm{margin:1.5rem 0;padding:1.2rem 1.4rem;
+  background:rgba(226,192,68,.06);border:1px solid rgba(226,192,68,.35);
+  border-left:3px solid #e2c044;border-radius:4px}
+.sn-confirm-title{font:600 .95rem var(--mono);color:#e2c044;margin-bottom:.8rem}
+.sn-confirm-url{font:400 .85rem var(--mono);color:var(--text);margin-bottom:1rem;
+  word-break:break-all;padding:.5rem .7rem;background:var(--panel);
+  border:1px solid var(--line);border-radius:3px}
+.sn-confirm-body{font:400 .82rem/1.7 var(--sans);color:var(--muted)}
+
+/* disclaimer */
+.sn-disclaimer{margin-top:2rem;padding:1.2rem 0;border-top:1px solid var(--line);
+  font:400 .72rem/1.5 var(--sans);color:var(--dim);text-align:center}
+
 /* notice, hint, endpoint */
 .sn-note{margin:1rem 0;padding:.8rem 1rem;border:1px solid var(--line-2);border-left:2px solid var(--c,var(--accent));
   border-radius:4px;background:var(--panel);font-size:.88rem;color:var(--text)}

@@ -93,6 +93,35 @@ def hint() -> str:
     )
 
 
+def disclaimer() -> str:
+    return _flat(
+        """
+        <div class="sn-disclaimer">
+          Sentinel adalah alat bantu audit keamanan. Pengguna bertanggung jawab
+          penuh atas legalitas penggunaan alat ini. Pengembang tidak bertanggung
+          jawab atas penyalahgunaan.
+        </div>
+        """
+    )
+
+def confirm_dialog(target: str) -> str:
+    """Dialog konfirmasi sebelum scan."""
+    return _flat(
+        f"""
+        <div class="sn-confirm">
+          <div class="sn-confirm-title">⚠️ Konfirmasi Pemindaian</div>
+          <div class="sn-confirm-url">{e(target)}</div>
+          <div class="sn-confirm-body">
+            Pastikan Anda:<br>
+            ✓ Memiliki izin dari pemilik website<br>
+            ✓ Atau website ini milik Anda sendiri<br>
+            ✓ Memahami risiko hukum UU ITE Pasal 30
+          </div>
+        </div>
+        """
+    )
+
+
 def notice(kind: str, text: str) -> str:
     return f'<div class="sn-note {"err" if kind == "err" else ""}">{e(text)}</div>'
 
