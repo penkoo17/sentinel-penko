@@ -1,3 +1,5 @@
+import os
+
 import httpx
 import streamlit as st
 from pathlib import Path
@@ -5,7 +7,9 @@ from pathlib import Path
 from theme import APP_CSS
 from views import board_doc, brand_with_logo, creator_bar, endpoints_view, hint, notice, summary, surface_view
 
-API = "http://localhost:8000"
+import os
+
+API = os.getenv("SENTINEL_API_URL", "https://sentinel-olive-omega.vercel.app")
 
 st.set_page_config(
     page_title="Sentinel",
