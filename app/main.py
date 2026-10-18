@@ -22,7 +22,19 @@ from app.scanners import (
 from app.models.scan import AttackSurfaceRequest
 from app.analyzers.attack_surface import scan_attack_surface
 
+
 app = FastAPI(title="Sentinel", version="0.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://global-access.us.ci",
+        "https://www.global-access.us.ci",
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 
 @app.get("/", response_class=HTMLResponse)
