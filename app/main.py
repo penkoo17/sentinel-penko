@@ -1,6 +1,8 @@
+
 import asyncio
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
 from app.analyzers import ai_analyst, scorer
